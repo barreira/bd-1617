@@ -7,5 +7,5 @@ Mestrado Integrado em Eng. Informática - 3º ano - Universidade do Minho
 
 * Carlos Pereira (@carlospereira1607)
 * João Pires Barreira (@jpiresbarreira)
-* Tiago Bouças
+* Tiago Bouças (@tiagoboucas)
 * Tiago Duarte (@TiagoNuno)
