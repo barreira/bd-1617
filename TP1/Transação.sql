@@ -13,8 +13,8 @@ BEGIN
 	START TRANSACTION;
     -- Inserção do bilhete 
     INSERT 
-		INTO bilhete (ID, Classe, Preço, Lugar, Viagem, Reserva)
-		VALUES (i, clas, 0, lug, viag, res);
+		INTO bilhete (Classe, Preço, Lugar, Viagem, Reserva)
+		VALUES (clas, 0, lug, viag, res);
 	-- Preço Base da Viagem
     SET pv = (SELECT PreçoBase FROM viagem WHERE ID = viag);
     -- Desconto
@@ -37,20 +37,25 @@ BEGIN
 		WHERE ID = i;
     -- Preço Bilhete
     SET pb = (SELECT Preço FROM bilhete WHERE ID = i);
-    -- Acutlização do Preço da Reserva
+    -- Actualização do Preço da Reserva
     UPDATE reserva
 		SET Preço = Preço + pb
 		WHERE ID = res;
 	-- Verificação da ocorrência de um erro.
     IF ErroTransacao THEN
 		-- Desfazer as operações realizadas.
-        ROLLBACK;
+		BEGIN
+			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
+			ROLLBACK;
+        END;
     ELSE
 		-- Confirmar as operações realizadas.
-        COMMIT;
+        BEGIN
+			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
+            COMMIT;
+		END;
 	END IF;
 END; $$
-
 
 
 delimiter $$
@@ -68,10 +73,16 @@ BEGIN
 	-- Verificação da ocorrência de um erro.
     IF ErroTransacao THEN
 		-- Desfazer as operações realizadas.
-        ROLLBACK;
+        BEGIN
+			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
+			ROLLBACK;
+        END;    
     ELSE
 		-- Confirmar as operações realizadas.
-        COMMIT;
+        BEGIN
+			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
+			COMMIT;
+		END;
 	END IF;
 END; $$
 
@@ -91,9 +102,15 @@ BEGIN
 	-- Verificação da ocorrência de um erro.
     IF ErroTransacao THEN
 		-- Desfazer as operações realizadas.
-        ROLLBACK;
+		BEGIN
+			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
+			ROLLBACK;
+		END;
     ELSE
 		-- Confirmar as operações realizadas.
-        COMMIT;
+        BEGIN
+			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
+            COMMIT;
+        END;    
 	END IF;
 END; $$
