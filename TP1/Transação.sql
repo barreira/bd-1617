@@ -1,3 +1,62 @@
+
+delimiter $$
+CREATE PROCEDURE novoCliente(IN nm VARCHAR(50), em VARCHAR(40))
+BEGIN
+	-- Declaraçãoo de um handler para tratamento de erros.
+    DECLARE ErroTransacao BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET ErroTransacao = 1;
+	-- Início da transação
+	START TRANSACTION;
+    -- Inserção do Cliente
+		INSERT 
+			INTO cliente (Nome, Email)
+            VALUES (nm, em);
+	-- Verificação da ocorrência de um erro.
+    IF ErroTransacao THEN
+		-- Desfazer as operações realizadas.
+        BEGIN
+			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
+			ROLLBACK;
+        END;    
+    ELSE
+		-- Confirmar as operações realizadas.
+        BEGIN
+			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
+			COMMIT;
+		END;
+	END IF;
+END; $$
+
+
+delimiter $$
+CREATE PROCEDURE abreReserva(IN cli INT)
+BEGIN
+	-- Declaraçãoo de um handler para tratamento de erros.
+    DECLARE ErroTransacao BOOL DEFAULT 0;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET ErroTransacao = 1;
+	-- Início da transação
+	START TRANSACTION;
+    -- Inserção do Cliente
+		INSERT 
+			INTO reserva (Cliente, Preço, Data)
+            VALUES (cli, 0, CURDATE());
+	-- Verificação da ocorrência de um erro.
+    IF ErroTransacao THEN
+		-- Desfazer as operações realizadas.
+		BEGIN
+			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
+			ROLLBACK;
+		END;
+    ELSE
+		-- Confirmar as operações realizadas.
+        BEGIN
+			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
+            COMMIT;
+        END;    
+	END IF;
+END; $$
+
+
 delimiter $$
 CREATE PROCEDURE inserirBilhete(IN res INT, lug INT, viag INT, clas VARCHAR(10))
 BEGIN
@@ -58,59 +117,3 @@ BEGIN
 END; $$
 
 
-delimiter $$
-CREATE PROCEDURE novoCliente(IN nm VARCHAR(50), em VARCHAR(40))
-BEGIN
-	-- Declaraçãoo de um handler para tratamento de erros.
-    DECLARE ErroTransacao BOOL DEFAULT 0;
-    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET ErroTransacao = 1;
-	-- Início da transação
-	START TRANSACTION;
-    -- Inserção do Cliente
-		INSERT 
-			INTO cliente (Nome, Email)
-            VALUES (nm, em);
-	-- Verificação da ocorrência de um erro.
-    IF ErroTransacao THEN
-		-- Desfazer as operações realizadas.
-        BEGIN
-			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
-			ROLLBACK;
-        END;    
-    ELSE
-		-- Confirmar as operações realizadas.
-        BEGIN
-			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
-			COMMIT;
-		END;
-	END IF;
-END; $$
-
-
-delimiter $$
-CREATE PROCEDURE abreReserva(IN cli INT)
-BEGIN
-	-- Declaraçãoo de um handler para tratamento de erros.
-    DECLARE ErroTransacao BOOL DEFAULT 0;
-    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET ErroTransacao = 1;
-	-- Início da transação
-	START TRANSACTION;
-    -- Inserção do Cliente
-		INSERT 
-			INTO reserva (Cliente, Preço, Data)
-            VALUES (cli, 0, CURDATE());
-	-- Verificação da ocorrência de um erro.
-    IF ErroTransacao THEN
-		-- Desfazer as operações realizadas.
-		BEGIN
-			SELECT 'Não foi possível concluir a operação' AS Mensagem_Retorno;
-			ROLLBACK;
-		END;
-    ELSE
-		-- Confirmar as operações realizadas.
-        BEGIN
-			SELECT 'Operação concluída com sucesso' AS Mensagem_Retorno;
-            COMMIT;
-        END;    
-	END IF;
-END; $$
