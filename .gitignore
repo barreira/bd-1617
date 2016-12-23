@@ -1,1 +1,4 @@
 *.tmp
+/TP2/MigracaoMySQLtoMongoDB/nbproject/private/
+/TP2/MigracaoMySQLtoMongoDB/dist/
+/TP2/MigracaoMySQLtoMongoDB/build/
