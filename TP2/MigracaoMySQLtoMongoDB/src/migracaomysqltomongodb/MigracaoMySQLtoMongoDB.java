@@ -10,6 +10,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import java.util.List;
 
 /**
@@ -22,10 +23,9 @@ public class MigracaoMySQLtoMongoDB {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Mongo mongo = null;
+        Mongo mongo = new MongoClient("localhost", 27017);
         DB db=null;
         DBCollection table=null;// Connection to the MongoDB-Server
-        mongo = new Mongo("localhost", 27017); 
 
         //get the connections
         db = mongo.getDB("testdb"); 
