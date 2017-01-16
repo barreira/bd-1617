@@ -8,7 +8,6 @@ package connecttodb;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -20,33 +19,37 @@ public class ConnectoToMySQL {
     public static void main(String[] args) {
 
         Connection conn = null;
-        
+    
         try {
             conn = Connect.connect();
-            PreparedStatement ps = conn.prepareStatement("INSERT into estação " + 
+            
+            PreparedStatement ps = conn.prepareStatement("SELECT * from estação");
+            
+            
+            
+            /*PreparedStatement ps = conn.prepareStatement("INSERT into estação " + 
                                                          "(id,Localidade,País) " + 
-                                                         "VALUES (69,'A tua prima','BemBoa');");
+                                                         "VALUES (71,'A tua prima','BemBoa');");
 
 
             ps.executeUpdate();
-            //ps.execute();
+            ps.execute();
              
              
-            PreparedStatement ps2 = conn.prepareStatement("SELECT * from estação " +
-                                       "WHERE id = 69;");
-
+            PreparedStatement ps2 = conn.prepareStatement("SELECT * from estação");
+ 
             ResultSet rs = ps2.executeQuery();
             while(rs.next())  
                 System.out.println(rs.getInt(1) + " " + rs.getString(2) + " " + rs.getString(3));  
-            
+            */
                 
         }catch(SQLException | ClassNotFoundException e){ 
-                System.out.println(e);
+                e.printStackTrace();
         } finally {
             try {
                 conn.close();
             } catch (Exception e) {
-                System.out.println(e);
+                e.printStackTrace();
             }
         }
     }
