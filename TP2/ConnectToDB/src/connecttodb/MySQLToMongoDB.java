@@ -5,19 +5,18 @@
  */
 package connecttodb;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import org.bson.Document;
 
 /**
@@ -31,15 +30,15 @@ public class MySQLToMongoDB {
     public static void main(String[] args) {
         docs = new ArrayList<>();
         
-        Mongo mongo = null;
-        MongoDatabase db=null;
-        MongoCollection<Document> table=null;
+        MongoDatabase db = null;
+        MongoCollection<Document> table = null;
         MongoClient client = new MongoClient();
 
         db = client.getDatabase("reservas_Comboio");
         table = db.getCollection("reservas_Comboio"); 
         
         Connection conn = null;
+        
         try {
             
             conn = Connect.connect();
@@ -93,7 +92,6 @@ public class MySQLToMongoDB {
             }
         }
     }
-    
     
     
     private static void toMongo(int idBilhete, int lugar, int idViagem,
@@ -157,36 +155,11 @@ public class MySQLToMongoDB {
     }
 }
 
-/* //create document and insert
-        Document document = new Document();
-        //document.append(str, table);
-        //document.p
-        HashMap<String, String> map = new HashMap<>();
-        map.put("campo1", "valor1");
-        map.put("campo1", "valor2");
-        map.put("campo1", "valor3");
-        document.putAll(map);
-        document.append("campo2", "valor2");
-        document.append("campo3", "valor3");
-        Document document2 = new Document();
-        Document document3 = new Document();
-        //document2.append("campo", document);
-        document2.put("teste", document);
-        
-        int [] array =  {1, 2, 3};
-        // BasicDBList b = new BasicDBList();
-        ArrayList<Integer> a = new ArrayList<>();
-        a.add(1);
-        a.add(2);
-        a.add(3);
-        document3.put("comboios", a);
-        //document3.put("key", document2);
-        //BasicDBObject document = new BasicDBObject();
-        //document.put("tipo", str); 
-        //document.put("age", 34);
-        //BasicDBObject document2 = new BasicDBObject();
-        //Document document2 = new Document();
-        //document2.put("name", "Beatrix");
-        //document2.put("age", 19);
-        table.insertOne(document3); 
-        //table.insertOne(document2); */
+class Connect {
+    public static Connection connect() throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/reservas_comboio?" +
+                                   "user=root&password=qweqwe");
+        return conn;   
+    }
+}

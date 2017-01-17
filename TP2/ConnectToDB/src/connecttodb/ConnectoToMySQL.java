@@ -54,7 +54,7 @@ public class ConnectoToMySQL {
         }
     }
 }
-
+/*
 class Connect {
     public static Connection connect() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
@@ -63,3 +63,4 @@ class Connect {
         return conn;   
     }
 }
+*/
