@@ -11,6 +11,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Time;
@@ -29,6 +30,15 @@ public class MySQLToMongoDB {
     
     public static void main(String[] args) {
         docs = new ArrayList<>();
+        
+        Mongo mongo = null;
+        MongoDatabase db=null;
+        MongoCollection<Document> table=null;
+        MongoClient client = new MongoClient();
+
+        db = client.getDatabase("reservas_Comboio");
+        table = db.getCollection("reservas_Comboio"); 
+        
         Connection conn = null;
         try {
             
@@ -41,7 +51,6 @@ public class MySQLToMongoDB {
                 int idReserva = rs.getInt(4);
                 String query2 = "SELECT * FROM bilhete b INNER JOIN viagem v ON b.viagem = v.id\n" +
                                 "INNER JOIN comboio c ON c.id = v.comboio\n" +
-                                "INNER JOIN lugar l ON c.id = l.comboio\n" +
                                 "INNER JOIN estação e1 ON v.origem = e1.id\n" +
                                 "INNER JOIN estação e2 ON v.destino = e2.id\n" +
                                 "WHERE b.reserva = " + idReserva;
@@ -50,12 +59,26 @@ public class MySQLToMongoDB {
                 ResultSet rs2 = ps.executeQuery();
                 
                 while(rs2.next()) {
+                   String lugar = "SELECT * FROM lugar WHERE Comboio = " + rs2.getInt(11);
+                   ps = conn.prepareStatement(lugar);
+                   ResultSet numLugares = ps.executeQuery();
+                   ArrayList<Document> lugares = new ArrayList<>();
+                    
+                   while(numLugares.next()) {
+                       Document doc = new Document();
+                       doc.append("Lugar", numLugares.getInt(1));
+                       lugares.add(doc);
+                   }
+                   
+                   
                    toMongo(rs2.getInt(1), rs2.getInt(2), rs2.getInt(3),
                            rs2.getString(4), rs2.getFloat(5), rs2.getInt(6),
                            rs2.getTimestamp(8), rs2.getTime(9), rs2.getInt(11),
                            rs2.getInt(12), rs2.getInt(13), rs2.getInt(15),
-                           rs2.getString(19), rs2.getString(20),
-                           rs2.getString(22), rs2.getString(23));
+                           rs2.getString(17), rs2.getString(18),
+                           rs2.getString(20), rs2.getString(21), lugares,
+                           rs.getInt(1), rs.getString(2), rs.getString(3),
+                           rs.getFloat(5), rs.getDate(7));
                 }
             }
             
@@ -63,6 +86,7 @@ public class MySQLToMongoDB {
             
         } finally {
             try {
+                table.insertMany(docs);
                 conn.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -78,38 +102,58 @@ public class MySQLToMongoDB {
                                 int idComboio, int idOrigem, int idDestino,
                                 int capacidade, String localidadeOrigem,
                                 String paisOrigem, String localidadeDestino,
-                                String paisDestino) {
-        Mongo mongo = null;
-        MongoDatabase db=null;
-        MongoCollection<Document> table=null;
-        MongoClient client = new MongoClient();
-
-        db = client.getDatabase("reservas_Comboio");
-        table = db.getCollection("reservas_Comboio"); 
-
-        Document document = new Document();
+                                String paisDestino, ArrayList lugares,
+                                int idCliente, String nomeCliente, String email,
+                                float precoReserva, Date dataReserva) {
         
-        document.put("ID Bilhete", idBilhete);
-        document.put("Número lugar", lugar);
-        document.put("ID Viagem", idViagem);
-        document.put("Classe", classe);
-        document.put("Preço", preco);
-        document.put("ID Reserva", idReserva);
-        document.put("Partida", dataHoraPartida.toString());
-        document.put("Duração", duracao.toString());
-        document.put("ID Comboio", idComboio);
-        document.put("ID Origem", idOrigem);
-        document.put("ID Destino", idDestino);
-        document.put("Capacidade", capacidade);
-        document.put("Localidade Origem", localidadeOrigem);
-        document.put("País Origem", paisOrigem);
-        document.put("Localidade Destino", localidadeDestino);
-        document.put("País Destino", paisDestino);
+        Document document = new Document();
+        Document cliente = new Document();
+        Document reserva = new Document();
+        Document bilhete = new Document();
+        Document viagem = new Document();
+        Document comboio = new Document();
+        Document origem = new Document();
+        Document destino = new Document();
+        
+        cliente.put("ID", idCliente);
+        cliente.put("Nome", nomeCliente);
+        cliente.put("E-Mail", email);
+        
+        reserva.put("ID", idReserva);
+        reserva.put("Preço", precoReserva);
+        reserva.put("Data", dataReserva.toString());
+        
+        bilhete.put("ID", idBilhete);
+        bilhete.put("Lugar", lugar);
+        bilhete.put("Classe", classe);
+        bilhete.put("Preço", preco);
+        
+        origem.put("ID", idOrigem);
+        origem.put("Localidade", localidadeOrigem);
+        origem.put("País", paisOrigem);
+        
+        destino.put("ID", idDestino);
+        destino.put("Localidade", localidadeDestino);
+        destino.put("País", paisDestino);
+        
+        viagem.put("ID", idViagem);
+        viagem.put("Partida", dataHoraPartida.toString());
+        viagem.put("Duração", duracao.toString());
+        viagem.put("Origem", origem);
+        viagem.put("Destino", destino);
+        
+        comboio.put("ID", idComboio);
+        comboio.put("Capacidade", capacidade);
+        comboio.put("Lugares", lugares);
+
+        
+        document.put("Cliente", cliente);
+        document.put("Reserva", reserva);
+        document.put("Bilhete", bilhete);
+        document.put("Viagem", viagem);
+        document.put("Comboio", comboio);
         
         docs.add(document);
-        
-        //table.insertOne(document); 
-
     }
 }
 
