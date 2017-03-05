@@ -1,4 +1,4 @@
-BD
+BD (nota final: 18)
 ==
 
 Trabalho prático da U.C. de Bases de Dados (2016/2017)
