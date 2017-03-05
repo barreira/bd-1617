@@ -1,5 +1,5 @@
-BD (nota final: 18)
-==
+#BD
+### Nota final do trabalho: 18 em 20.
 
 Trabalho prático da U.C. de Bases de Dados (2016/2017)
 
